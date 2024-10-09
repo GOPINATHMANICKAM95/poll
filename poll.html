@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Now</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Vote in the Poll</h1>
+        <p>Choose an option below:</p>
+        <button onclick="vote('option1')">Vote for Option 1</button>
+        <button onclick="vote('option2')">Vote for Option 2</button>
+        <p id="message"></p>
+
+        <h2>Current Poll Results:</h2>
+        <p>Option 1: <span id="option1Votes">0</span> votes</p>
+        <p>Option 2: <span id="option2Votes">0</span> votes</p>
+    </div>
+
+    <script>
+        // Function to cast a vote
+        function vote(option) {
+            fetch(`/vote/${option}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').textContent = data;
+                // Update poll results after voting
+                getPollResults();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to fetch and display current poll results
+        function getPollResults() {
+            fetch('/results')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('option1Votes').textContent = data.option1;
+                    document.getElementById('option2Votes').textContent = data.option2;
+                })
+                .catch(error => console.error('Error fetching poll results:', error));
+        }
+
+        // Initial load of poll results when the page loads
+        window.onload = function() {
+            getPollResults();
+        }
+    </script>
+</body>
+</html>
